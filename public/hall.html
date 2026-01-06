@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Bingo Hall</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>BINGO</h1>
+<div id="number">--</div>
+
+<select id="speed">
+  <option value="5000">5 δευτ</option>
+  <option value="3000">3 δευτ</option>
+  <option value="1500">1.5 δευτ</option>
+</select>
+
+<button onclick="start()">START</button>
+
+<div id="winner">
+  <img id="wphoto">
+  <h2 id="wname"></h2>
+  <p id="wwins"></p>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io();
+let current = null;
+
+function start(){
+  socket.emit("start", +speed.value);
+}
+
+socket.on("number", n=>{
+  current=n;
+  number.textContent=n;
+  number.classList.remove("animate");
+  void number.offsetWidth;
+  number.classList.add("animate");
+});
+
+socket.on("winner", w=>{
+  wphoto.src=w.photo;
+  wname.textContent=w.name;
+  wwins.textContent="Νίκες: "+w.wins;
+  winner.style.display="flex";
+});
+</script>
+
+</body>
+</html>
